@@ -20,15 +20,17 @@ export const formatErrors = (
 if (!parsedClientEnv.success) {
     // eslint-disable-next-line no-console
     console.error("❌ Invalid environment variables:\n", ...formatErrors(parsedClientEnv.error.format()));
-    throw new Error("Invalid environment variables");
+    if (!process.env.SKIP_ENV_VALIDATION) {
+        throw new Error("Invalid environment variables");
+    }
+} else {
+    Object.keys(parsedClientEnv.data).forEach((key) => {
+        if (!key.startsWith("NEXT_PUBLIC_")) {
+            // eslint-disable-next-line no-console
+            console.warn(`❌ Invalid public environment variable name: ${key}. It must begin with 'NEXT_PUBLIC_'`);
+            throw new Error("Invalid public environment variable name");
+        }
+    });
 }
 
-Object.keys(parsedClientEnv.data).forEach((key) => {
-    if (!key.startsWith("NEXT_PUBLIC_")) {
-        // eslint-disable-next-line no-console
-        console.warn(`❌ Invalid public environment variable name: ${key}. It must begin with 'NEXT_PUBLIC_'`);
-        throw new Error("Invalid public environment variable name");
-    }
-});
-
-export const env = parsedClientEnv.data;
+export const env = parsedClientEnv.success ? parsedClientEnv.data : /** @type {any} */ ({});
