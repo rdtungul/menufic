@@ -1,7 +1,7 @@
 FROM node:22.2.0
 WORKDIR /app
 COPY package*.json ./
-RUN npm i
+RUN npm i --ignore-scripts
 COPY . .
 RUN npm run postinstall
 RUN npm run build
