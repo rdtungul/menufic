@@ -4,6 +4,6 @@ COPY package*.json ./
 RUN npm i --ignore-scripts
 COPY . .
 RUN npm run postinstall
-RUN npm run build
+RUN SKIP_ENV_VALIDATION=true npm run build
 EXPOSE 3000
 CMD ["npm", "run", "start"]
